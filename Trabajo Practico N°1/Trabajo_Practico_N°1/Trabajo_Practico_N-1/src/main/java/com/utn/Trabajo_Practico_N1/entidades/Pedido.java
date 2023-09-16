@@ -1,0 +1,49 @@
+package com.utn.Trabajo_Practico_N1.entidades;
+
+
+import com.utn.Trabajo_Practico_N1.Enums.Estado;
+import com.utn.Trabajo_Practico_N1.Enums.TipoEnvio;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+@Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class Pedido extends BaseEntidad {
+    @Enumerated(EnumType.STRING)
+    private Estado estado;
+    @Temporal(TemporalType.DATE)
+    private Date fecha;
+    @Enumerated(EnumType.STRING)
+    private TipoEnvio tipoEnvio;
+    private double total;
+
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "IdFactura", nullable = true)
+    private Factura factura;
+
+    @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true,fetch = FetchType.EAGER)
+    @JoinColumn(name = "Pedidos_id")
+    @Builder.Default
+    private List<DetallePedido> detallePedidos = new ArrayList<>();
+
+    public void agregarDetallePedido(DetallePedido detPedido){
+        detallePedidos.add(detPedido);
+    }
+    public void mostrarDetallePedido(){
+        System.out.println(" Detalle de los Pedidos con estado: " + estado +", fecha: "+ ", envio:" + tipoEnvio + " y un total de: " + total);
+        for (DetallePedido detallePedido : detallePedidos){
+            System.out.println("Cantidad: " + detallePedido.getCantidad() + " y subtotal: "+ detallePedido.getSubtotal());
+        }
+    }
+}
